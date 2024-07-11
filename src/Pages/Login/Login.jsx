@@ -1,18 +1,22 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../Providers/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import Swal from "sweetalert2";
 
 const Login = () => {
-  const captchaRef = useRef(null);
-
   const [disabled, setDisabled] = useState(true);
   const { signInUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  // let from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/";
+  console.log("state in the location ", location.state);
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -26,6 +30,24 @@ const Login = () => {
     signInUser(email, password).then((result) => {
       const user = result.user;
       console.log(user);
+      Swal.fire({
+        title: "User Logged in successfully!",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      });
+      navigate(from, { replace: true });
     });
   };
 
@@ -90,12 +112,13 @@ const Login = () => {
                   name="captcha"
                   placeholder="Type the captcha above"
                   className="input input-bordered"
-                  required
+                  // required
                 />
               </div>
               <div className="form-control mt-6">
                 <input
-                  disabled={disabled}
+                  //TO DO: RECEPT
+                  disabled={false}
                   type="submit"
                   className="btn btn-primary"
                   value="Login"
